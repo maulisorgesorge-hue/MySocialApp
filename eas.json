@@ -1,10 +1,15 @@
 {
-  "build": {
-    "preview": {
-      "android": {
-        "buildType": "apk"
-      }
+  "expo": {
+    "name": "MySocialApp",
+    "slug": "MySocialApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
     },
-    "production": {}
+    "android": {
+      "package": "com.maulisorge.mysocialapp"
+    }
   }
 }
