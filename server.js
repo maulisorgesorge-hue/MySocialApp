@@ -1,47 +1,42 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path");
+const helmet = require("helmet");
 
+// एक्सप्रेस ऐप शुरू करें
 const app = express();
+
+// Middlewares
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
 
-// 1. Static Files (Photos/Videos के लिए)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// --- DATABASE CONNECTION ---
+// यहाँ अपनी MongoDB URI डालें
+const MONGO_URI = "mongodb+srv://your_username:your_password@cluster.mongodb.net/MySocialApp";
 
-// 2. Database Connection
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/socialapp";
 mongoose.connect(MONGO_URI)
   .then(() => console.log("Database Connected Successfully ✅"))
-  .catch(err => console.log("DB Error: ", err));
+  .catch((err) => console.log("DB Connection Error: ", err));
 
-// 3. MODELS (User और Post को यहीं रहने दें ताकि बाकी फाइलें इस्तेमाल कर सकें)
-const User = mongoose.model("User", {
-  username: String, email: String, followers: [String], following: [String]
+// --- IMPORT ROUTES (जो फोल्डर्स हमने अभी बनाए) ---
+const authRoute = require("./routes/auth");
+const postRoute = require("./routes/post");
+const storyRoute = require("./routes/story");
+
+// --- USE ROUTES ---
+// अब आपके API Endpoints ऐसे होंगे: /api/auth/login, /api/posts/all आदि
+app.use("/api/auth", authRoute);
+app.use("/api/posts", postRoute);
+app.use("/api/stories", storyRoute);
+
+// Home Route (चेक करने के लिए कि सर्वर चल रहा है)
+app.get("/", (req, res) => {
+  res.send("Welcome to My Social Media API 🚀");
 });
-const Post = mongoose.model("Post", {
-  userId: String, image: String, videoUrl: String, caption: String, 
-  likes: [String], shares: [String], comments: Array
-});
 
-// 4. IMPORT ALL MODULES (अपनी बनाई हुई फाइलों को यहाँ जोड़ें)
-app.use('/api', require('./Like'));
-app.use('/api', require('./dm-system'));
-app.use('/api', require('./comment-system'));
-app.use('/api', require('./share-system'));
-app.use('/api', require('./Reels'));
-app.use('/api', require('./ai-system'));
-app.use('/api', require('./ar-system'));
-app.use('/api', require('./analytics-system'));
-app.use('/api', require('./dashboard-system'));
-app.use('/api', require('./settings-system'));
-app.use('/api', require('./Bookmark-save'));
-app.use('/api', require('./Monetization'));
-
-// 5. Basic Route
-app.get("/", (req, res) => res.send("Instagram Backend API is Live 🚀"));
-
-// 6. Start Server
+// Server Listen
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT} 🔥`);
+});
