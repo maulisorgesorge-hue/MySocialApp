@@ -1,0 +1,37 @@
+// FRIEND SUGGESTIONS SYSTEM (INSTAGRAM-Like)
+
+// GET SUGGESTED USERS TO FOLLOW
+app.get("/suggestions/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  // Get the current user's following list
+  const user = await User.findById(userId).lean();
+  const following = user.following || [];
+
+  // Suggest users not already followed
+  const suggestions = await User.find({
+    _id: { $ne: userId, $nin: following }
+  })
+    .limit(20)
+    .select("username displayName profilePicture followers")
+    .sort({ followers: -1 }); // suggest popular users first
+
+  res.json({ total: suggestions.length, suggestions });
+});
+
+// OPTIONAL: REALTIME FOLLOW RECOMMENDATION (Socket.IO)
+io.on("connection", (socket) => {
+  socket.on("getSuggestions", async (userId) => {
+    const user = await User.findById(userId).lean();
+    const following = user.following || [];
+
+    const suggestions = await User.find({
+      _id: { $ne: userId, $nin: following }
+    })
+      .limit(10)
+      .select("username displayName profilePicture followers")
+      .sort({ followers: -1 });
+
+    socket.emit("suggestionsUpdate", suggestions);
+  });
+});
