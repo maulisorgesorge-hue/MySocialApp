@@ -1,0 +1,72 @@
+// APP SETTINGS SYSTEM (INSTAGRAM-Like User Preferences)
+
+const AppSetting = mongoose.model("AppSetting", {
+  userId: String,
+  notifications: {
+    likes: { type: Boolean, default: true },
+    comments: { type: Boolean, default: true },
+    followers: { type: Boolean, default: true },
+    live: { type: Boolean, default: true },
+    dm: { type: Boolean, default: true }
+  },
+  privacy: {
+    profileVisible: { type: Boolean, default: true },
+    storyVisibleTo: { type: [String], default: [] }, // userIds
+    allowMentions: { type: Boolean, default: true }
+  },
+  theme: { type: String, default: "light" }, // light or dark
+  language: { type: String, default: "en" },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// CREATE OR UPDATE USER SETTINGS
+app.post("/settings/update", async (req, res) => {
+  const { userId, notifications, privacy, theme, language } = req.body;
+
+  let settings = await AppSetting.findOne({ userId });
+  if (!settings) {
+    settings = new AppSetting({ userId, notifications, privacy, theme, language });
+  } else {
+    if (notifications) settings.notifications = notifications;
+    if (privacy) settings.privacy = privacy;
+    if (theme) settings.theme = theme;
+    if (language) settings.language = language;
+  }
+
+  await settings.save();
+  res.json({ message: "Settings updated", settings });
+});
+
+// GET USER SETTINGS
+app.get("/settings/:userId", async (req, res) => {
+  const settings = await AppSetting.findOne({ userId: req.params.userId });
+  if (!settings) return res.status(404).send("Settings not found");
+
+  res.json({ settings });
+});
+
+// TOGGLE SPECIFIC NOTIFICATION
+app.post("/settings/toggleNotification", async (req, res) => {
+  const { userId, type, value } = req.body; // type: likes, comments, followers, live, dm
+
+  const settings = await AppSetting.findOne({ userId });
+  if (!settings) return res.status(404).send("Settings not found");
+
+  if (settings.notifications[type] !== undefined) {
+    settings.notifications[type] = value;
+  }
+
+  await settings.save();
+  res.json({ message: "Notification toggled", settings });
+});
+
+// CHANGE THEME
+app.post("/settings/theme", async (req, res) => {
+  const { userId, theme } = req.body; // theme: light/dark
+  const settings = await AppSetting.findOne({ userId });
+  if (!settings) return res.status(404).send("Settings not found");
+
+  settings.theme = theme;
+  await settings.save();
+  res.json({ message: "Theme updated", settings });
+});
