@@ -1,0 +1,162 @@
+// ADD COMMENT
+app.post("/comment/:postId", async (req, res) => {
+  const { userId, text } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+  if (!post) return res.status(404).send("Post not found");
+
+  const newComment = {
+    _id: new mongoose.Types.ObjectId(),
+    userId,
+    text,
+    likes: [],
+    replies: [],
+    createdAt: new Date()
+  };
+
+  post.comments.push(newComment);
+  await post.save();
+
+  res.json({
+    message: "Comment Added",
+    comment: newComment,
+    totalComments: post.comments.length
+  });
+});
+
+
+// GET ALL COMMENTS
+app.get("/comments/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  res.json({
+    totalComments: post.comments.length,
+    comments: post.comments
+  });
+});
+
+
+// DELETE COMMENT
+app.post("/comment/delete/:postId/:commentId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  const comment = post.comments.find(c => c._id.toString() === req.params.commentId);
+
+  if (!comment) return res.status(404).send("Comment not found");
+
+  if (comment.userId !== userId) return res.status(403).send("Not allowed");
+
+  post.comments = post.comments.filter(c => c._id.toString() !== req.params.commentId);
+
+  await post.save();
+
+  res.json({
+    message: "Comment Deleted",
+    totalComments: post.comments.length
+  });
+});
+
+
+// LIKE / UNLIKE COMMENT
+app.post("/comment/like/:postId/:commentId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  const comment = post.comments.find(c => c._id.toString() === req.params.commentId);
+
+  let liked = false;
+
+  if (comment.likes.includes(userId)) {
+    comment.likes = comment.likes.filter(id => id !== userId);
+    liked = false;
+  } else {
+    comment.likes.push(userId);
+    liked = true;
+  }
+
+  await post.save();
+
+  res.json({
+    message: liked ? "Comment Liked" : "Comment Unliked",
+    totalLikes: comment.likes.length,
+    liked: liked
+  });
+});
+
+
+// ADD REPLY TO COMMENT
+app.post("/comment/reply/:postId/:commentId", async (req, res) => {
+  const { userId, text } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  const comment = post.comments.find(c => c._id.toString() === req.params.commentId);
+
+  const reply = {
+    _id: new mongoose.Types.ObjectId(),
+    userId,
+    text,
+    createdAt: new Date()
+  };
+
+  comment.replies.push(reply);
+
+  await post.save();
+
+  res.json({
+    message: "Reply Added",
+    reply: reply
+  });
+});
+
+
+// GET REPLIES
+app.get("/comment/replies/:postId/:commentId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  const comment = post.comments.find(c => c._id.toString() === req.params.commentId);
+
+  res.json({
+    totalReplies: comment.replies.length,
+    replies: comment.replies
+  });
+});
+
+
+// EDIT COMMENT
+app.post("/comment/edit/:postId/:commentId", async (req, res) => {
+  const { userId, text } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  const comment = post.comments.find(c => c._id.toString() === req.params.commentId);
+
+  if (comment.userId !== userId) return res.status(403).send("Not allowed");
+
+  comment.text = text;
+
+  await post.save();
+
+  res.json({
+    message: "Comment Updated",
+    comment: comment
+  });
+});
+
+
+// CLEAR ALL COMMENTS
+app.post("/comments/clear/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  post.comments = [];
+
+  await post.save();
+
+  res.json({
+    message: "All Comments Cleared",
+    totalComments: 0
+  });
+});
