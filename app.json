@@ -1,29 +1,17 @@
 {
   "expo": {
-    "name": "MyApp",
-    "slug": "my-app",
+    "name": "SocialStream",
+    "slug": "mauli-social",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": ["**/*"],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.myapp.demo"
+      "package": "com.mauli.socialstream"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "extra": {
+      "eas": {
+        "projectId": "ede8070b-f479-4f87-b6b3-f22f82ac25a6"
+      }
     }
   }
 }
