@@ -1,0 +1,85 @@
+// REELS SYSTEM (INSTAGRAM-LIKE SHORT VIDEOS)
+
+const Reel = mongoose.model("Reel", {
+  userId: String,
+  videoUrl: String,
+  caption: String,
+  likes: [String],
+  comments: [
+    {
+      _id: String,
+      userId: String,
+      text: String
+    }
+  ],
+  shares: [String],
+  createdAt: { type: Date, default: Date.now }
+});
+
+// CREATE REEL
+app.post("/reels/create", async (req, res) => {
+  const { userId, videoUrl, caption } = req.body;
+
+  const reel = new Reel({
+    userId,
+    videoUrl,
+    caption
+  });
+
+  await reel.save();
+  res.json({ message: "Reel created", reel });
+});
+
+// GET ALL REELS
+app.get("/reels", async (req, res) => {
+  const reels = await Reel.find().sort({ createdAt: -1 });
+  res.json(reels);
+});
+
+// LIKE/UNLIKE REEL
+app.post("/reels/like/:reelId", async (req, res) => {
+  const { userId } = req.body;
+  const reel = await Reel.findById(req.params.reelId);
+
+  if (!reel.likes.includes(userId)) {
+    reel.likes.push(userId);
+  } else {
+    reel.likes = reel.likes.filter(id => id !== userId);
+  }
+
+  await reel.save();
+  res.json({ message: "Reel liked/unliked", likes: reel.likes.length });
+});
+
+// COMMENT ON REEL
+app.post("/reels/comment/:reelId", async (req, res) => {
+  const { userId, text } = req.body;
+  const reel = await Reel.findById(req.params.reelId);
+
+  const comment = { _id: new Date().toISOString(), userId, text };
+  reel.comments.push(comment);
+
+  await reel.save();
+  res.json({ message: "Comment added", comment });
+});
+
+// SHARE REEL
+app.post("/reels/share/:reelId", async (req, res) => {
+  const { userId } = req.body;
+  const reel = await Reel.findById(req.params.reelId);
+
+  if (!reel.shares.includes(userId)) reel.shares.push(userId);
+
+  await reel.save();
+  res.json({ message: "Reel shared", shares: reel.shares.length });
+});
+
+// GET REEL ANALYTICS
+app.get("/reels/analytics/:reelId", async (req, res) => {
+  const reel = await Reel.findById(req.params.reelId);
+  res.json({
+    likes: reel.likes.length,
+    comments: reel.comments.length,
+    shares: reel.shares.length
+  });
+});
