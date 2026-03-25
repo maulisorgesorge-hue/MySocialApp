@@ -1,0 +1,64 @@
+// NOTIFICATIONS SYSTEM (INSTAGRAM-LIKE NOTIFICATIONS)
+
+const Notification = mongoose.model("Notification", {
+  userId: String,        // Who receives the notification
+  senderId: String,      // Who triggered the notification
+  type: String,          // like, comment, follow, share, mention
+  postId: String,        // Optional, related post
+  read: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// CREATE NOTIFICATION
+const createNotification = async ({ userId, senderId, type, postId }) => {
+  const notification = new Notification({
+    userId,
+    senderId,
+    type,
+    postId
+  });
+
+  await notification.save();
+  return notification;
+};
+
+// GET NOTIFICATIONS FOR USER
+app.get("/notifications/:userId", async (req, res) => {
+  const notifications = await Notification.find({ userId: req.params.userId })
+    .sort({ createdAt: -1 })
+    .limit(50);
+
+  res.json({
+    total: notifications.length,
+    notifications
+  });
+});
+
+// MARK NOTIFICATION AS READ
+app.post("/notifications/read/:notificationId", async (req, res) => {
+  const notification = await Notification.findById(req.params.notificationId);
+  if (!notification) return res.status(404).send("Notification not found");
+
+  notification.read = true;
+  await notification.save();
+
+  res.json({ message: "Notification marked as read", notification });
+});
+
+// DELETE NOTIFICATION
+app.post("/notifications/delete/:notificationId", async (req, res) => {
+  await Notification.findByIdAndDelete(req.params.notificationId);
+  res.json({ message: "Notification deleted" });
+});
+
+// REALTIME NOTIFICATIONS USING SOCKET.IO
+io.on("connection", (socket) => {
+  socket.on("joinNotifications", (userId) => {
+    socket.join("notif_" + userId);
+  });
+
+  socket.on("triggerNotification", async ({ userId, senderId, type, postId }) => {
+    const notif = await createNotification({ userId, senderId, type, postId });
+    io.to("notif_" + userId).emit("newNotification", notif);
+  });
+});
