@@ -1,18 +1,21 @@
-// BOOKMARK / SAVE POSTS SYSTEM (INSTAGRAM-Like)
+const express = require('express');
+const router = express.Router(); // राउटर बनाया
+const mongoose = require('mongoose');
 
-// MODEL FOR BOOKMARKS
+// --- MODEL ---
 const Bookmark = mongoose.model("Bookmark", {
   userId: String,
   postId: String,
-  reelId: String,      // optional, for saving reels
+  reelId: String,      
   createdAt: { type: Date, default: Date.now }
 });
 
-// SAVE POST OR REEL
-app.post("/bookmark/save", async (req, res) => {
+// --- ROUTES ---
+
+// SAVE POST OR REEL (app की जगह router लिखा है)
+router.post("/bookmark/save", async (req, res) => {
   const { userId, postId, reelId } = req.body;
 
-  // Prevent duplicate bookmarks
   const exists = await Bookmark.findOne({ userId, postId, reelId });
   if (exists) return res.status(400).send("Already bookmarked");
 
@@ -23,15 +26,17 @@ app.post("/bookmark/save", async (req, res) => {
 });
 
 // GET USER BOOKMARKS
-app.get("/bookmark/:userId", async (req, res) => {
+router.get("/bookmark/:userId", async (req, res) => {
   const bookmarks = await Bookmark.find({ userId: req.params.userId }).sort({ createdAt: -1 });
   res.json({ total: bookmarks.length, bookmarks });
 });
 
 // REMOVE BOOKMARK
-app.post("/bookmark/remove", async (req, res) => {
+router.post("/bookmark/remove", async (req, res) => {
   const { userId, postId, reelId } = req.body;
-
   await Bookmark.findOneAndDelete({ userId, postId, reelId });
   res.json({ message: "Bookmark removed" });
 });
+
+// सबसे जरूरी लाइन!
+module.exports = router; 
