@@ -1,0 +1,55 @@
+// PROFILE CUSTOMIZATION SYSTEM (INSTAGRAM-Like)
+
+// MODEL FOR PROFILE CUSTOMIZATION
+const ProfileCustomization = mongoose.model("ProfileCustomization", {
+  userId: String,
+  displayName: String,
+  bio: String,
+  profilePicture: String,
+  website: String,
+  theme: { type: String, default: "light" }, // light or dark
+  accentColor: { type: String, default: "#000000" },
+  privateAccount: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+// UPDATE PROFILE
+app.post("/profile/update", async (req, res) => {
+  const { userId, displayName, bio, profilePicture, website, theme, accentColor, privateAccount } = req.body;
+
+  let profile = await ProfileCustomization.findOne({ userId });
+  if (!profile) {
+    profile = new ProfileCustomization({ userId, displayName, bio, profilePicture, website, theme, accentColor, privateAccount });
+  } else {
+    if (displayName) profile.displayName = displayName;
+    if (bio) profile.bio = bio;
+    if (profilePicture) profile.profilePicture = profilePicture;
+    if (website) profile.website = website;
+    if (theme) profile.theme = theme;
+    if (accentColor) profile.accentColor = accentColor;
+    if (privateAccount !== undefined) profile.privateAccount = privateAccount;
+  }
+
+  await profile.save();
+  res.json({ message: "Profile updated", profile });
+});
+
+// GET USER PROFILE
+app.get("/profile/:userId", async (req, res) => {
+  const profile = await ProfileCustomization.findOne({ userId: req.params.userId });
+  if (!profile) return res.status(404).send("Profile not found");
+
+  res.json({ profile });
+});
+
+// TOGGLE PRIVATE ACCOUNT
+app.post("/profile/togglePrivate", async (req, res) => {
+  const { userId, privateAccount } = req.body;
+  const profile = await ProfileCustomization.findOne({ userId });
+  if (!profile) return res.status(404).send("Profile not found");
+
+  profile.privateAccount = privateAccount;
+  await profile.save();
+
+  res.json({ message: "Private account status updated", profile });
+});
