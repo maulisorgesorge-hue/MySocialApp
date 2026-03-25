@@ -1,45 +1,87 @@
-import React, { useState } from "react";
-import axios from "axios";
+// LIKE / UNLIKE (TOGGLE)
+app.post("/like/:postId", async (req, res) => {
+  const { userId } = req.body;
 
-export default function PostCard({ post }) {
-  const [liked, setLiked] = useState(false);
-  const [showHeart, setShowHeart] = useState(false);
+  const post = await Post.findById(req.params.postId);
 
-  const likePost = async () => {
-    await axios.post(`http://localhost:5000/api/posts/like/${post._id}`);
-    setLiked(true);
-  };
+  if (!post) return res.status(404).send("Post not found");
 
-  const handleDoubleTap = () => {
-    likePost();
-    setShowHeart(true);
-    setTimeout(() => setShowHeart(false), 1000);
-  };
+  let liked = false;
 
-  return (
-    <div onDoubleClick={handleDoubleTap} style={{ position: "relative" }}>
-      
-      <img
-        src="https://via.placeholder.com/400"
-        alt=""
-        style={{ width: "100%" }}
-      />
+  if (post.likes.includes(userId)) {
+    post.likes = post.likes.filter(id => id !== userId);
+    liked = false;
+  } else {
+    post.likes.push(userId);
+    liked = true;
+  }
 
-      {/* ❤️ Animation */}
-      {showHeart && (
-        <div style={{
-          position: "absolute",
-          top: "40%",
-          left: "40%",
-          fontSize: "50px"
-        }}>
-          ❤️
-        </div>
-      )}
+  await post.save();
 
-      <button onClick={likePost}>
-        {liked ? "❤️ Liked" : "🤍 Like"}
-      </button>
-    </div>
-  );
-}
+  res.json({
+    message: liked ? "Liked" : "Unliked",
+    totalLikes: post.likes.length,
+    liked: liked
+  });
+});
+
+// GET TOTAL LIKES COUNT
+app.get("/likes/count/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  res.json({
+    totalLikes: post.likes.length
+  });
+});
+
+// GET ALL USERS WHO LIKED
+app.get("/likes/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  res.json({
+    likes: post.likes
+  });
+});
+
+// CHECK IF USER LIKED
+app.post("/likes/check/:postId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  const liked = post.likes.includes(userId);
+
+  res.json({
+    liked: liked
+  });
+});
+
+// REMOVE LIKE BY USER
+app.post("/likes/remove/:postId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  post.likes = post.likes.filter(id => id !== userId);
+
+  await post.save();
+
+  res.json({
+    message: "Like Removed",
+    totalLikes: post.likes.length
+  });
+});
+
+// CLEAR ALL LIKES (ADMIN)
+app.post("/likes/clear/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  post.likes = [];
+
+  await post.save();
+
+  res.json({
+    message: "All Likes Cleared",
+    totalLikes: 0
+  });
+});
