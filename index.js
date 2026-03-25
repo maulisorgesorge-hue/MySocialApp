@@ -1,34 +1,30 @@
-import { registerRootComponent } from 'expo';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
 
-import App from './App';
+export default function App() {
+  const [email, setEmail] = useState('');
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const app = express();
+  const handleLogin = async () => {
+    // यहाँ हम सर्वर को कॉल करेंगे, सर्वर का कोड यहाँ नहीं लिखेंगे!
+    alert("लॉगिन की कोशिश कर रहे हैं...");
+  };
 
-app.use(express.json());
-app.use(cors());
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>My Social App</Text>
+      <TextInput 
+        placeholder="Email" 
+        style={styles.input} 
+        onChangeText={setEmail}
+      />
+      <Button title="Login" onPress={handleLogin} />
+    </View>
+  );
+}
 
-// --- अपनी फाइलों को यहाँ जोड़ें (Routes) ---
-const likeRoutes = require('./Like'); 
-const bookmarkRoutes = require('./Bookmark-save');
-const monetizationRoutes = require('./Monetization');
-const commentRoutes = require('./COMMENT SYSTEM');
-
-// --- इन रास्तों का इस्तेमाल करें ---
-app.use('/api', likeRoutes);
-app.use('/api', bookmarkRoutes);
-app.use('/api', monetizationRoutes);
-app.use('/api', commentRoutes);
-
-// MongoDB कनेक्शन
-mongoose.connect('आपका_MONGODB_URL_यहाँ')
-  .then(() => console.log("Instagram Backend Connected!"))
-  .catch(err => console.log(err));
-
-app.listen(3000, () => console.log("Server running on port 3000"));
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+  input: { width: '80%', borderBottomWidth: 1, marginBottom: 20, padding: 8 }
+});
+          
