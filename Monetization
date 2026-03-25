@@ -1,0 +1,64 @@
+// MONETIZATION SYSTEM (INSTAGRAM-LIKE)
+
+// MODEL FOR EARNINGS
+const Earning = mongoose.model("Earning", {
+  userId: String,
+  postId: String,
+  type: String, // ad, sponsored, tip
+  amount: Number,
+  createdAt: { type: Date, default: Date.now }
+});
+
+// CREATE EARNING ENTRY (e.g., AD REVENUE)
+app.post("/earnings/add", async (req, res) => {
+  const { userId, postId, type, amount } = req.body;
+
+  const earning = new Earning({
+    userId,
+    postId,
+    type,
+    amount
+  });
+
+  await earning.save();
+
+  res.json({ message: "Earning recorded", earning });
+});
+
+// GET USER TOTAL EARNINGS
+app.get("/earnings/user/:userId", async (req, res) => {
+  const earnings = await Earning.find({ userId: req.params.userId });
+
+  const total = earnings.reduce((acc, curr) => acc + curr.amount, 0);
+
+  res.json({
+    totalEarnings: total,
+    earnings: earnings
+  });
+});
+
+// GET POST EARNINGS
+app.get("/earnings/post/:postId", async (req, res) => {
+  const earnings = await Earning.find({ postId: req.params.postId });
+
+  const total = earnings.reduce((acc, curr) => acc + curr.amount, 0);
+
+  res.json({
+    totalEarnings: total,
+    earnings: earnings
+  });
+});
+
+// REALTIME EARNING UPDATE USING SOCKET.IO
+io.on("connection", (socket) => {
+  socket.on("joinEarnings", (userId) => {
+    socket.join("earn_" + userId);
+  });
+
+  socket.on("addEarning", async ({ userId, postId, type, amount }) => {
+    const earning = new Earning({ userId, postId, type, amount });
+    await earning.save();
+
+    io.to("earn_" + userId).emit("earningUpdated", earning);
+  });
+});
