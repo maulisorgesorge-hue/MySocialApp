@@ -2,7 +2,7 @@
   "expo": {
     "name": "mauli",
     "slug": "mauli-app",
-    "version": "1.0.२",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
