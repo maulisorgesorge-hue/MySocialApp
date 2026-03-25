@@ -1,0 +1,51 @@
+// SHOPPING CART SYSTEM (INSTAGRAM-LIKE)
+
+// MODEL FOR CART ITEMS
+const CartItem = mongoose.model("CartItem", {
+  userId: String,
+  productId: String,
+  quantity: { type: Number, default: 1 },
+  addedAt: { type: Date, default: Date.now }
+});
+
+// ADD ITEM TO CART
+app.post("/cart/add", async (req, res) => {
+  const { userId, productId, quantity } = req.body;
+
+  let item = await CartItem.findOne({ userId, productId });
+  if (item) {
+    item.quantity += quantity;
+  } else {
+    item = new CartItem({ userId, productId, quantity });
+  }
+
+  await item.save();
+  res.json({ message: "Item added to cart", item });
+});
+
+// REMOVE ITEM FROM CART
+app.post("/cart/remove", async (req, res) => {
+  const { userId, productId } = req.body;
+
+  await CartItem.findOneAndDelete({ userId, productId });
+  res.json({ message: "Item removed from cart" });
+});
+
+// GET USER CART
+app.get("/cart/:userId", async (req, res) => {
+  const items = await CartItem.find({ userId: req.params.userId }).populate("productId");
+  res.json({ totalItems: items.length, items });
+});
+
+// UPDATE ITEM QUANTITY
+app.post("/cart/update", async (req, res) => {
+  const { userId, productId, quantity } = req.body;
+
+  const item = await CartItem.findOne({ userId, productId });
+  if (!item) return res.status(404).send("Item not found in cart");
+
+  item.quantity = quantity;
+  await item.save();
+
+  res.json({ message: "Cart updated", item });
+});
