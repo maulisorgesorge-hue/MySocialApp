@@ -1,6 +1,8 @@
-// DIRECT MESSAGES SYSTEM (INSTAGRAM-LIKE)
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
 
-// MODEL FOR MESSAGES
+// --- MESSAGE MODEL ---
 const Message = mongoose.model("Message", {
   senderId: String,
   receiverId: String,
@@ -9,24 +11,22 @@ const Message = mongoose.model("Message", {
   createdAt: { type: Date, default: Date.now }
 });
 
-// SEND MESSAGE
-app.post("/dm/send", async (req, res) => {
-  const { senderId, receiverId, text } = req.body;
+// --- ROUTES ---
 
+// 1. SEND MESSAGE
+router.post("/dm/send", async (req, res) => {
+  const { senderId, receiverId, text } = req.body;
   const message = new Message({ senderId, receiverId, text });
   await message.save();
 
-  // REALTIME EMIT
-  io.to(receiverId).emit("receiveMessage", message);
-  io.to(senderId).emit("receiveMessage", message);
-
+  // ध्यान दें: Socket.io (io.emit) का काम हम index.js में करेंगे 
+  // या req.app.get('socketio') का इस्तेमाल करेंगे। अभी के लिए डेटा सेव हो रहा है।
   res.json({ message: "Message sent", data: message });
 });
 
-// GET CHAT BETWEEN TWO USERS
-app.get("/dm/chat/:user1/:user2", async (req, res) => {
+// 2. GET CHAT BETWEEN TWO USERS
+router.get("/dm/chat/:user1/:user2", async (req, res) => {
   const { user1, user2 } = req.params;
-
   const messages = await Message.find({
     $or: [
       { senderId: user1, receiverId: user2 },
@@ -37,13 +37,14 @@ app.get("/dm/chat/:user1/:user2", async (req, res) => {
   res.json({ total: messages.length, messages });
 });
 
-// MARK MESSAGE AS READ
-app.post("/dm/read/:messageId", async (req, res) => {
+// 3. MARK AS READ
+router.post("/dm/read/:messageId", async (req, res) => {
   const message = await Message.findById(req.params.messageId);
   if (!message) return res.status(404).send("Message not found");
 
   message.read = true;
   await message.save();
-
   res.json({ message: "Message marked as read", data: message });
 });
+
+module.exports = router;
