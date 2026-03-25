@@ -1,0 +1,96 @@
+// SHARE POST (TOGGLE + COUNT + TRACK USERS)
+app.post("/share/:postId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+  if (!post) return res.status(404).send("Post not found");
+
+  if (!post.shares) post.shares = [];
+
+  let shared = false;
+
+  if (post.shares.includes(userId)) {
+    post.shares = post.shares.filter(id => id !== userId);
+    shared = false;
+  } else {
+    post.shares.push(userId);
+    shared = true;
+  }
+
+  await post.save();
+
+  res.json({
+    message: shared ? "Shared" : "Unshared",
+    totalShares: post.shares.length,
+    shared: shared,
+    shares: post.shares
+  });
+});
+
+
+// GET TOTAL SHARE COUNT
+app.get("/shares/count/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  res.json({
+    totalShares: post.shares ? post.shares.length : 0
+  });
+});
+
+
+// GET ALL USERS WHO SHARED
+app.get("/shares/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  res.json({
+    shares: post.shares || []
+  });
+});
+
+
+// CHECK IF USER SHARED
+app.post("/shares/check/:postId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  const shared = post.shares ? post.shares.includes(userId) : false;
+
+  res.json({
+    shared: shared
+  });
+});
+
+
+// REMOVE SHARE BY USER
+app.post("/shares/remove/:postId", async (req, res) => {
+  const { userId } = req.body;
+
+  const post = await Post.findById(req.params.postId);
+
+  if (!post.shares) post.shares = [];
+
+  post.shares = post.shares.filter(id => id !== userId);
+
+  await post.save();
+
+  res.json({
+    message: "Share Removed",
+    totalShares: post.shares.length
+  });
+});
+
+
+// CLEAR ALL SHARES
+app.post("/shares/clear/:postId", async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+
+  post.shares = [];
+
+  await post.save();
+
+  res.json({
+    message: "All Shares Cleared",
+    totalShares: 0
+  });
+});
