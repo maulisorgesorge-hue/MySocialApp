@@ -1,0 +1,102 @@
+const http = require("http");
+const socketIO = require("socket.io");
+
+const server = http.createServer(app);
+
+const io = socketIO(server, {
+  cors: {
+    origin: "*"
+  }
+});
+
+// SOCKET CONNECTION
+io.on("connection", (socket) => {
+
+  // JOIN USER ROOM
+  socket.on("join", (userId) => {
+    socket.join(userId);
+  });
+
+  // REALTIME LIKE
+  socket.on("likePost", async ({ postId, userId }) => {
+    const post = await Post.findById(postId);
+
+    if (!post.likes.includes(userId)) {
+      post.likes.push(userId);
+    } else {
+      post.likes = post.likes.filter(id => id !== userId);
+    }
+
+    await post.save();
+
+    io.emit("likeUpdated", {
+      postId: postId,
+      likes: post.likes.length
+    });
+  });
+
+  // REALTIME COMMENT
+  socket.on("commentPost", async ({ postId, userId, text }) => {
+    const post = await Post.findById(postId);
+
+    const comment = {
+      _id: new Date().toISOString(),
+      userId,
+      text
+    };
+
+    post.comments.push(comment);
+    await post.save();
+
+    io.emit("commentUpdated", {
+      postId: postId,
+      comment: comment
+    });
+  });
+
+  // REALTIME SHARE
+  socket.on("sharePost", async ({ postId, userId }) => {
+    const post = await Post.findById(postId);
+
+    if (!post.shares) post.shares = [];
+
+    if (!post.shares.includes(userId)) {
+      post.shares.push(userId);
+    }
+
+    await post.save();
+
+    io.emit("shareUpdated", {
+      postId: postId,
+      shares: post.shares.length
+    });
+  });
+
+  // REALTIME CHAT
+  socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
+    const msg = new Message({
+      senderId,
+      receiverId,
+      text
+    });
+
+    await msg.save();
+
+    io.to(receiverId).emit("receiveMessage", msg);
+    io.to(senderId).emit("receiveMessage", msg);
+  });
+
+  // TYPING INDICATOR
+  socket.on("typing", ({ senderId, receiverId }) => {
+    io.to(receiverId).emit("typing", senderId);
+  });
+
+  socket.on("stopTyping", ({ senderId, receiverId }) => {
+    io.to(receiverId).emit("stopTyping", senderId);
+  });
+
+  socket.on("disconnect", () => {});
+});
+
+// START SERVER WITH SOCKET
+server.listen(5000, () => console.log("Realtime Server running"));
