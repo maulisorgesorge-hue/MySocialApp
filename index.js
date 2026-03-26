@@ -3,46 +3,76 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-
-// Middleware - यह ऐप और सर्वर के बीच की रुकावट दूर करेगा
-app.use(cors()); 
+app.use(cors());
 app.use(express.json());
 
-// 1. MongoDB Connection (आपकी पुरानी स्ट्रिंग का इस्तेमाल किया है)
+// 1. MongoDB Connection
 const mongoURI = "mongodb+srv://maulisorgesorge_db_user:Cj7VpYpXk5v9Uv6u@cluster0.mongodb.net/mySocialApp?retryWrites=true&w=majority";
-
 mongoose.connect(mongoURI)
-    .then(() => console.log("डेटाबेस कनेक्ट हो गया भाई! ✅"))
-    .catch(err => console.log("डेटाबेस एरर: ", err));
+    .then(() => console.log("Database Connected! ✅"))
+    .catch(err => console.log("DB Error: ", err));
 
-// 2. होम रूट - यह चेक करने के लिए कि सर्वर चालू है
-app.get('/', (req, res) => {
-    res.send("सोशल ऐप का सर्वर अब लाइव है! 🚀");
-});
+// 2. Database Models (यूजर और पोस्ट का ढांचा)
+const User = mongoose.model('User', new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    name: String,
+    profilePic: String
+}));
 
-// 3. लॉगिन रूट - जो आपके ऐप से डेटा रिसीव करेगा
-app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-    
-    console.log("लॉगिन की कोशिश:", email);
+const Post = mongoose.model('Post', new mongoose.Schema({
+    userEmail: String,
+    userName: String,
+    content: String,
+    imageUrl: String,
+    createdAt: { type: Date, default: Date.now }
+}));
 
-    // अभी के लिए हम सबको सक्सेस भेज रहे हैं ताकि आपका ऐप चले
-    if (email && password) {
-        res.status(200).json({ 
-            status: "success", 
-            message: "लॉगिन सफल रहा! ✅",
-            user: { email: email }
-        });
-    } else {
-        res.status(400).json({ 
-            status: "error", 
-            message: "ईमेल या पासवर्ड गायब है!" 
-        });
+// 3. ROUTES (सारे फीचर्स यहाँ हैं)
+
+// --- होम चेक ---
+app.get('/', (req, res) => res.send("Social App Server is Fully Functional! 🚀"));
+
+// --- नया अकाउंट बनाना (Signup) ---
+app.post('/signup', async (req, res) => {
+    try {
+        const newUser = new User(req.body);
+        await newUser.save();
+        res.status(201).json({ status: "success", message: "Account Created!" });
+    } catch (err) {
+        res.status(400).json({ status: "error", message: "User already exists or data missing" });
     }
 });
 
-// 4. पोर्ट सेटअप
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`सर्वर पोर्ट ${PORT} पर चालू है`);
+// --- असली लॉगिन (Login) ---
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email, password });
+    if (user) {
+        res.json({ status: "success", message: "Welcome back!", user });
+    } else {
+        res.status(401).json({ status: "error", message: "Invalid email or password" });
+    }
 });
+
+// --- नई पोस्ट डालना (Create Post) ---
+app.post('/posts', async (req, res) => {
+    try {
+        const newPost = new Post(req.body);
+        await newPost.save();
+        res.json({ status: "success", message: "Post shared!" });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: "Could not post" });
+    }
+});
+
+// --- सारी पोस्ट देखना (Get All Posts) ---
+app.get('/posts', async (req, res) => {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json(posts);
+});
+
+// 4. Server Start
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+           
