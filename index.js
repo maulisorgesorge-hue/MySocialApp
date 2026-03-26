@@ -1,78 +1,45 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-// 1. MongoDB Connection
-const mongoURI = "mongodb+srv://maulisorgesorge_db_user:Cj7VpYpXk5v9Uv6u@cluster0.mongodb.net/mySocialApp?retryWrites=true&w=majority";
-mongoose.connect(mongoURI)
-    .then(() => console.log("Database Connected! ✅"))
-    .catch(err => console.log("DB Error: ", err));
-
-// 2. Database Models (यूजर और पोस्ट का ढांचा)
-const User = mongoose.model('User', new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    name: String,
-    profilePic: String
-}));
-
-const Post = mongoose.model('Post', new mongoose.Schema({
-    userEmail: String,
-    userName: String,
-    content: String,
-    imageUrl: String,
-    createdAt: { type: Date, default: Date.now }
-}));
-
-// 3. ROUTES (सारे फीचर्स यहाँ हैं)
-
-// --- होम चेक ---
-app.get('/', (req, res) => res.send("Social App Server is Fully Functional! 🚀"));
-
-// --- नया अकाउंट बनाना (Signup) ---
-app.post('/signup', async (req, res) => {
+  const handleLogin = async () => {
     try {
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.status(201).json({ status: "success", message: "Account Created!" });
-    } catch (err) {
-        res.status(400).json({ status: "error", message: "User already exists or data missing" });
+      // यहाँ आपका Render वाला लिंक आएगा
+      const response = await fetch('https://social-app-server-32un.onrender.com/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        Alert.alert("बधाई हो!", "आप लॉगिन हो गए ✅");
+      } else {
+        Alert.alert("गलती", "ईमेल या पासवर्ड गलत है");
+      }
+    } catch (error) {
+      Alert.alert("एरर", "सर्वर चालू नहीं है भाई!");
     }
-});
+  };
 
-// --- असली लॉगिन (Login) ---
-app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email, password });
-    if (user) {
-        res.json({ status: "success", message: "Welcome back!", user });
-    } else {
-        res.status(401).json({ status: "error", message: "Invalid email or password" });
-    }
-});
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>My Social App</Text>
+      <TextInput style={styles.input} placeholder="Email" onChangeText={setEmail} />
+      <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={setPassword} />
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={{color: 'white'}}>Login</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
-// --- नई पोस्ट डालना (Create Post) ---
-app.post('/posts', async (req, res) => {
-    try {
-        const newPost = new Post(req.body);
-        await newPost.save();
-        res.json({ status: "success", message: "Post shared!" });
-    } catch (err) {
-        res.status(500).json({ status: "error", message: "Could not post" });
-    }
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', padding: 20 },
+  title: { fontSize: 24, textAlign: 'center', marginBottom: 20 },
+  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 5 },
+  button: { backgroundColor: '#0095f6', padding: 15, alignItems: 'center', borderRadius: 5 }
 });
-
-// --- सारी पोस्ट देखना (Get All Posts) ---
-app.get('/posts', async (req, res) => {
-    const posts = await Post.find().sort({ createdAt: -1 });
-    res.json(posts);
-});
-
-// 4. Server Start
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-           
+    
