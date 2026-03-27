@@ -3,15 +3,15 @@
     "name": "VibeTube",
     "slug": "vibetube-app",
     "version": "1.0.0",
-    "icon": "./assets/icon.png",  // मुख्य फोटो
+    "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/icon.png", // स्प्लैश के लिए भी वही फोटो
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png", // एंड्रॉइड लोगो के लिए भी वही फोटो
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.maulikrishna.vibetube"
