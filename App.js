@@ -1,10 +1,24 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
 export default function App() {
+  // Like के लिए State (शुरुआत में 500 लाइक्स)
+  const [likes, setLikes] = useState(500);
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleLike = () => {
+    if (isLiked) {
+      setLikes(likes - 1);
+      setIsLiked(false);
+    } else {
+      setLikes(likes + 1);
+      setIsLiked(true);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -24,20 +38,37 @@ export default function App() {
 
         {/* Video Posts */}
         <Text style={styles.sectionTitle}>Trending Videos</Text>
-        {[1, 2].map((v) => (
-          <View key={v} style={styles.ytPost}>
-            <View style={styles.videoThumbnail}>
-              <Ionicons name="play-circle" size={60} color="white" />
-            </View>
-            <View style={styles.videoInfo}>
-              <View style={styles.userIcon} />
-              <View>
-                <Text style={styles.videoTitle}>VibeTube: India's New Super App</Text>
-                <Text style={styles.videoStats}>SuperTeam • 1M views</Text>
-              </View>
+        
+        <View style={styles.ytPost}>
+          <View style={styles.videoThumbnail}>
+            <Ionicons name="play-circle" size={60} color="white" />
+          </View>
+          <View style={styles.videoInfo}>
+            <View style={styles.userIcon} />
+            <View>
+              <Text style={styles.videoTitle}>VibeTube: India's New Super App</Text>
+              <Text style={styles.videoStats}>SuperTeam • 1M views</Text>
             </View>
           </View>
-        ))}
+
+          {/* --- नया Like बटन यहाँ है --- */}
+          <View style={styles.interactionBar}>
+            <TouchableOpacity style={styles.likeButton} onPress={handleLike}>
+              <Ionicons 
+                name={isLiked ? "heart" : "heart-outline"} 
+                size={26} 
+                color={isLiked ? "red" : "black"} 
+              />
+              <Text style={styles.likeText}>{likes} Likes</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.likeButton}>
+              <Ionicons name="chatbubble-outline" size={24} color="black" />
+              <Text style={styles.likeText}>Comment</Text>
+            </TouchableOpacity>
+          </View>
+          {/* --------------------------- */}
+        </View>
       </ScrollView>
 
       {/* Bottom Nav */}
@@ -65,6 +96,12 @@ const styles = StyleSheet.create({
   userIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#ccc', marginRight: 10 },
   videoTitle: { fontSize: 16, fontWeight: '600', width: width - 80 },
   videoStats: { color: 'gray', fontSize: 12 },
+  
+  // नए स्टाइल
+  interactionBar: { flexDirection: 'row', paddingHorizontal: 15, paddingBottom: 10 },
+  likeButton: { flexDirection: 'row', alignItems: 'center', marginRight: 20 },
+  likeText: { marginLeft: 5, fontWeight: 'bold', fontSize: 14 },
+
   bottomNav: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 10, borderTopWidth: 0.5, borderColor: '#ccc' },
   uploadBtn: { backgroundColor: 'red', width: 45, height: 45, borderRadius: 22.5, justifyContent: 'center', alignItems: 'center' }
 });
