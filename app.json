@@ -3,6 +3,11 @@
     "name": "VibeTube",
     "slug": "vibetube-app",
     "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "693e80a6-177b-49be-a666-34a5b974c1eb"
+      }
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -14,18 +19,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.vibetube.app"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.vibetube.app",
+      "buildType": "apk"
     }
   }
 }
