@@ -1,23 +1,20 @@
 {
-  "name": "vibetube-app",
-  "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
-  "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
-  },
-  "dependencies": {
-    "expo": "~50.0.0",
-    "expo-status-bar": "~1.11.1",
-    "react": "18.2.0",
-    "react-native": "0.73.6",
-    "expo-av": "~13.10.5",
-    "@expo/vector-icons": "^14.0.0",
-    "expo-font": "~11.10.3",
-    "react-native-svg": "14.1.0",
-    "@react-navigation/native": "^6.1.9",
-    "@react-navigation/bottom-tabs": "^6.5.11"
-  },
-  "private": true
+  "expo": {
+    "name": "VibeTube",
+    "slug": "vibetube-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.maulikrishna.vibetube",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "693e80a6-177b-49be-a666-34a5b974c1eb"
+      }
+    }
+  }
 }
