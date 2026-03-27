@@ -3,35 +3,23 @@
     "name": "VibeTube",
     "slug": "vibetube-app",
     "version": "1.0.0",
-    "owner": "mauli-k-sorge",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",  // मुख्य फोटो
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.png", // स्प्लैश के लिए भी वही फोटो
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png", // एंड्रॉइड लोगो के लिए भी वही फोटो
         "backgroundColor": "#ffffff"
       },
       "package": "com.maulikrishna.vibetube"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
         "projectId": "693e80a6-177b-49be-a666-34a5b974c1eb"
       }
-    },
-    "cli": {
-      "appVersionSource": "remote"
     }
   }
 }
