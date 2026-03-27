@@ -9,14 +9,7 @@
         "projectId": "693e80a6-177b-49be-a666-34a5b974c1eb"
       }
     },
-    "updates": {
-      "url": "https://u.expo.dev/693e80a6-177b-49be-a666-34a5b974c1eb"
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "android": {
       "package": "com.vibetube.app",
