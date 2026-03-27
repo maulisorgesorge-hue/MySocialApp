@@ -20,7 +20,7 @@ router.post("/story", async (req, res) => {
     const story = new Story(req.body);
     await story.save();
     res.json({ message: "Story Added Successfully 📸", story });
-  } catch (err) {
+  } catch(err) {
     res.status(500).json({ error: err.message });
   }
 });
