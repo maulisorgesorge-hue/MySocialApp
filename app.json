@@ -12,8 +12,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "android": {
-      "package": "com.vibetube.app",
-      "buildType": "apk"
+      "package": "com.vibetube.app"
     }
   }
 }
