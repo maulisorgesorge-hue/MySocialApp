@@ -3,11 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-// अपनी फाइलों को यहाँ Import करें
-import HomeScreen from './Home'; 
-import ReelsScreen from './Reels'; 
-import LiveScreen from './LiveSystem'; 
-import ProfileScreen from './profile-system'; 
+// आपकी असली फाइलों के नामों के हिसाब से सही किए गए Imports
+import HomeScreen from './index';             // आपकी फाइल index.js है
+import ReelsScreen from './Reels';           // आपकी फाइल Reels.js है
+import LiveScreen from './live-system';      // आपकी फाइल live-system.js है
+import ProfileScreen from './profile-system'; // आपकी फाइल profile-system.js है
 
 const Tab = createBottomTabNavigator();
 
@@ -36,4 +36,4 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-}
+        }
