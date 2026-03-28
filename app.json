@@ -3,23 +3,15 @@
     "name": "VibeTube-App",
     "slug": "vibetube-app",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+    "owner": "sorgemauli-new",
+    "extra": {
+      "eas": {
+        "projectId": "d2c3f76c-7171-4170-a414-ff1f19c17686"
+      }
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.yourname.vibetube"
+      "package": "com.sorgemauli.vibetube"
     }
+    // ... बाकी का कोड (assets, icons आदि)
   }
 }
