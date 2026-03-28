@@ -2,12 +2,20 @@
   "expo": {
     "name": "VibeTube",
     "slug": "vibetube-app",
+    "owner": "mauli-k-sorge",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": null, 
+    "icon": null,
+    "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -15,9 +23,12 @@
       },
       "package": "com.maulikrishna.vibetube"
     },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
     "extra": {
       "eas": {
-        "projectId": "693e80a6-177b-49be-a666-34a5b974c1eb"
+        "projectId": "693e80a6-177b-49be-a666-3d6606093631"
       }
     }
   }
