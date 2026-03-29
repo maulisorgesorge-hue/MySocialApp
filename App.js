@@ -4,23 +4,20 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 
-// अपनी फाइल्स इम्पोर्ट करें
-import HomeScreen from './HomeScreen';
-import SearchScreen from './search-system';
+import HomeScreen from './HomeScreen'; 
+import SearchScreen from './search-system'; 
 import ProfileScreen from './profile-system';
-import MonetizationScreen from './Monetization';
+import MonetizationScreen from './Monetization'; // यह पेज अब सिर्फ प्रोफाइल से खुलेगा
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// यह 'ProfileStack' प्रोफाइल के अंदर Monetization खोलने में मदद करेगा
+// प्रोफाइल के अंदर Monetization खोलने के लिए Stack
 function ProfileStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ProfileMain" component={ProfileScreen} />
-      <Stack.Screen name="Monetization" component={MonetizationScreen} 
-        options={{ headerShown: true, title: 'Earnings' }} 
-      />
+    <Stack.Navigator>
+      <Stack.Screen name="ProfileMain" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Monetization" component={MonetizationScreen} options={{ title: 'Monetization' }} />
     </Stack.Navigator>
   );
 }
@@ -38,7 +35,6 @@ export default function App() {
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: '#FF0000',
-          tabBarInactiveTintColor: 'gray',
           headerShown: false,
         })}
       >
@@ -48,5 +44,4 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-                        }
-        
+          }
