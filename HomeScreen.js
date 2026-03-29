@@ -172,3 +172,63 @@ const styles = StyleSheet.create({
     fontSize: 14
   }
 });
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+// 1. सबसे ऊपर इसे इम्पोर्ट करें
+import * as ImagePicker from 'expo-image-picker';
+
+export default function HomeScreen() {
+
+  // 2. स्टोरी अपलोड करने का फंक्शन
+  const uploadStory = async () => {
+    // गैलरी की परमिशन मांगना
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (status !== 'granted') {
+      alert("गैलरी की परमिशन चाहिए स्टोरी डालने के लिए!");
+      return;
+    }
+
+    // गैलरी खोलना (सिर्फ वीडियो के लिए)
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      allowsEditing: true,
+      aspect: [9, 16],
+      quality: 1,
+      videoMaxDuration: 60, // 👈 यहाँ 60 सेकंड (1 मिनट) सेट है
+    });
+
+    if (!result.canceled) {
+      console.log("Video URI:", result.assets[0].uri);
+      alert("आपकी 1 मिनट की स्टोरी अपलोड हो गई!");
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* ... बाकी हेडर का कोड ... */}
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.storySection}>
+        
+        {/* 👉 'Your Story' बटन पर फंक्शन लगा दिया */}
+        <TouchableOpacity style={styles.storyBox} onPress={uploadStory}>
+          <View style={styles.myStoryCircle}>
+            <Image source={{ uri: "https://i.pravatar.cc/150?img=12" }} style={styles.storyImg} />
+            <View style={styles.plusIcon}>
+              <Ionicons name="add" size={12} color="white" />
+            </View>
+          </View>
+          <Text style={styles.storyText}>Your Story</Text>
+        </TouchableOpacity>
+
+        {/* ... दूसरों की स्टोरी ... */}
+      </ScrollView>
+      
+      {/* ... बाकी फीड का कोड ... */}
+    </View>
+  );
+}
+
+// ... स्टाइलिंग पहले वाली ही रहेगी
+    
