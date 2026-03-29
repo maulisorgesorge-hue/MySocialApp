@@ -1,60 +1,70 @@
-const express = require('express');
-const router = express.Router();
-const mongoose = require('mongoose');
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView, Switch } from 'react-native';
 
-// --- PROFILE MODEL ---
-const ProfileCustomization = mongoose.model("ProfileCustomization", {
-  userId: String,
-  displayName: String,
-  bio: String,
-  profilePicture: String,
-  website: String,
-  theme: { type: String, default: "light" }, 
-  accentColor: { type: String, default: "#000000" },
-  privateAccount: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
-});
+const ProfileScreen = () => {
+  // स्टेट्स (Data को मैनेज करने के लिए)
+  const [displayName, setDisplayName] = useState('Vibe User');
+  const [bio, setBio] = useState('Creating vibes on SocialStream! 🚀');
+  const [isPrivate, setIsPrivate] = useState(false);
 
-// --- ROUTES ---
+  return (
+    <ScrollView style={styles.container}>
+      {/* प्रोफाइल हेडर */}
+      <View style={styles.header}>
+        <Image 
+          source={{ uri: 'https://via.placeholder.com/150' }} 
+          style={styles.avatar} 
+        />
+        <Text style={styles.username}>{displayName}</Text>
+      </View>
 
-// 1. UPDATE PROFILE (Create if not exists)
-router.post("/profile/update", async (req, res) => {
-  const { userId, displayName, bio, profilePicture, website, theme, accentColor, privateAccount } = req.body;
+      {/* एडिट फॉर्म */}
+      <View style={styles.form}>
+        <Text style={styles.label}>Display Name</Text>
+        <TextInput 
+          style={styles.input} 
+          value={displayName} 
+          onChangeText={setDisplayName} 
+        />
 
-  try {
-    let profile = await ProfileCustomization.findOne({ userId });
-    
-    if (!profile) {
-      profile = new ProfileCustomization(req.body);
-    } else {
-      // सिर्फ वही चीजें अपडेट करें जो बॉडी में भेजी गई हैं
-      Object.assign(profile, req.body);
-    }
+        <Text style={styles.label}>Bio</Text>
+        <TextInput 
+          style={[styles.input, { height: 80 }]} 
+          value={bio} 
+          multiline
+          onChangeText={setBio} 
+        />
 
-    await profile.save();
-    res.json({ message: "Profile updated successfully ✅", profile });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+        {/* प्राइवेसी टॉगल */}
+        <View style={styles.switchRow}>
+          <Text style={styles.label}>Private Account</Text>
+          <Switch 
+            value={isPrivate} 
+            onValueChange={setIsPrivate} 
+            trackColor={{ false: "#767577", true: "#FF0000" }}
+          />
+        </View>
 
-// 2. GET USER PROFILE
-router.get("/profile/:userId", async (req, res) => {
-  const profile = await ProfileCustomization.findOne({ userId: req.params.userId });
-  if (!profile) return res.status(404).json({ message: "Profile not found" });
-  res.json({ profile });
-});
-
-// 3. TOGGLE PRIVATE ACCOUNT (Quick Access)
-router.post("/profile/togglePrivate", async (req, res) => {
-  const { userId, privateAccount } = req.body;
-  const profile = await ProfileCustomization.findOneAndUpdate(
-    { userId }, 
-    { privateAccount }, 
-    { new: true }
+        <TouchableOpacity style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Save Profile ✅</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
-  if (!profile) return res.status(404).send("Profile not found");
-  res.json({ message: "Privacy updated", profile });
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f9f9f9' },
+  header: { alignItems: 'center', padding: 40, backgroundColor: '#fff' },
+  avatar: { width: 100, height: 100, borderRadius: 50, marginBottom: 10, borderWidth: 2, borderColor: '#FF0000' },
+  username: { fontSize: 22, fontWeight: 'bold' },
+  form: { padding: 20 },
+  label: { fontSize: 16, fontWeight: '600', marginBottom: 5, color: '#333' },
+  input: { backgroundColor: '#fff', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', marginBottom: 20 },
+  switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 },
+  saveButton: { backgroundColor: '#FF0000', padding: 15, borderRadius: 10, alignItems: 'center' },
+  saveButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' }
 });
 
-module.exports = router;
+export default ProfileScreen;
+        
