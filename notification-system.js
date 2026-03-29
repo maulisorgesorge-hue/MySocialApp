@@ -1,48 +1,69 @@
-const express = require('express');
-const router = express.Router();
-const mongoose = require('mongoose');
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-// --- NOTIFICATION MODEL ---
-const Notification = mongoose.model("Notification", {
-  userId: String,        
-  senderId: String,      
-  type: String,          // like, comment, follow, share, mention
-  postId: String,        
-  read: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
-});
+const NotificationScreen = () => {
+  // डमी डेटा (जो बाद में आपके सर्वर से आएगा)
+  const [notifications, setNotifications] = useState([
+    { id: '1', user: 'rahul_vibe', type: 'like', time: '2m', img: 'https://via.placeholder.com/50' },
+    { id: '2', user: 'sonia_art', type: 'follow', time: '15m', img: 'https://via.placeholder.com/50' },
+    { id: '3', user: 'amit_tech', type: 'comment', time: '1h', msg: 'Great reel! 🔥', img: 'https://via.placeholder.com/50' },
+    { id: '4', user: 'vibe_official', type: 'system', time: '2h', msg: 'Your reel crossed 20,000 views! 🎉', img: 'https://via.placeholder.com/50' },
+  ]);
 
-// --- HELPER FUNCTION (दूसरे मॉड्यूल्स के लिए) ---
-const createNotification = async ({ userId, senderId, type, postId }) => {
-  const notification = new Notification({ userId, senderId, type, postId });
-  await notification.save();
-  return notification;
+  const renderIcon = (type) => {
+    switch (type) {
+      case 'like': return <Ionicons name="heart" size={18} color="#FF0000" />;
+      case 'follow': return <Ionicons name="person-add" size={18} color="#0095f6" />;
+      case 'comment': return <Ionicons name="chatbubble" size={18} color="#555" />;
+      default: return <Ionicons name="notifications" size={18} color="#FFD700" />;
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Notifications</Text>
+      </View>
+
+      <FlatList
+        data={notifications}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.notiItem}>
+            <Image source={{ uri: item.img }} style={styles.avatar} />
+            <View style={styles.textContainer}>
+              <Text style={styles.notiText}>
+                <Text style={styles.userName}>{item.user} </Text>
+                {item.type === 'like' && 'liked your reel.'}
+                {item.type === 'follow' && 'started following you.'}
+                {item.type === 'comment' && `commented: ${item.msg}`}
+                {item.type === 'system' && item.msg}
+              </Text>
+              <Text style={styles.timeText}>{item.time}</Text>
+            </View>
+            <View style={styles.iconBadge}>
+              {renderIcon(item.type)}
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
 };
 
-// --- ROUTES ---
-
-// 1. GET NOTIFICATIONS
-router.get("/notifications/:userId", async (req, res) => {
-  const notifications = await Notification.find({ userId: req.params.userId })
-    .sort({ createdAt: -1 })
-    .limit(50);
-  res.json({ total: notifications.length, notifications });
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', paddingTop: 50 },
+  header: { paddingHorizontal: 20, paddingBottom: 15, borderBottomWidth: 0.5, borderBottomColor: '#eee' },
+  headerTitle: { fontSize: 24, fontWeight: 'bold' },
+  notiItem: { flexDirection: 'row', padding: 15, alignItems: 'center', borderBottomWidth: 0.5, borderBottomColor: '#f9f9f9' },
+  avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
+  textContainer: { flex: 1 },
+  userName: { fontWeight: 'bold', color: '#000' },
+  notiText: { fontSize: 14, color: '#333', lineHeight: 20 },
+  timeText: { fontSize: 12, color: '#999', marginTop: 3 },
+  iconBadge: { marginLeft: 10 },
 });
 
-// 2. MARK AS READ
-router.post("/notifications/read/:notificationId", async (req, res) => {
-  const notification = await Notification.findByIdAndUpdate(
-    req.params.notificationId, 
-    { read: true }, 
-    { new: true }
-  );
-  res.json({ message: "Read", notification });
-});
-
-// 3. DELETE NOTIFICATION
-router.delete("/notifications/:notificationId", async (req, res) => {
-  await Notification.findByIdAndDelete(req.params.notificationId);
-  res.json({ message: "Notification deleted" });
-});
-
-module.exports = { router, createNotification };
+export default NotificationScreen;
+        
