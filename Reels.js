@@ -1,62 +1,134 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, FlatList, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  TouchableOpacity
+} from "react-native";
+import { Video } from "expo-av";
+import { Ionicons } from "@expo/vector-icons";
 
-const { height, width } = Dimensions.get('window');
+const { height, width } = Dimensions.get("window");
 
-// डमी डेटा (यही डेटा बाद में आपके डेटाबेस से आएगा)
-const DUMMY_REELS = [
-  { id: '1', user: 'Amit_Vibe', caption: 'आज का मौसम! #vibes', likes: '10K' },
-  { id: '2', user: 'Rahul_Tech', caption: 'New App coming soon..', likes: '5K' },
+const videos = [
+  { id: "1", url: "https://www.w3schools.com/html/mov_bbb.mp4", user: "User 1", likes: 120, comments: 30 },
+  { id: "2", url: "https://www.w3schools.com/html/movie.mp4", user: "User 2", likes: 90, comments: 12 }
 ];
 
-const Reels = () => {
-  const renderItem = ({ item }) => (
-    <View style={styles.reelContainer}>
-      {/* वीडियो की जगह ब्लैक बैकग्राउंड और एक डमी आइकॉन */}
-      <View style={styles.videoPlaceholder}>
-        <Text style={{color: '#555'}}>Video Playing...</Text>
+export default function ReelsScreen() {
+  // यह ट्रैक करेगा कि अभी कौन सा रील नंबर (index) सामने है
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+
+  // जब वीडियो स्वाइप होगा, तो यह फंक्शन बताएगा कि कौन सा वीडियो दिख रहा है
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setActiveVideoIndex(viewableItems[0].index);
+    }
+  }).current;
+
+  // यह सेटिंग पक्का करती है कि जब कम से कम 50% वीडियो स्क्रीन पर आ जाए, तभी उसे 'दिख रहा है' माना जाए
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50
+  }).current;
+
+  const renderItem = ({ item, index }) => (
+    <View style={styles.container}>
+      
+      {/* 🎥 Video */}
+      <Video
+        source={{ uri: item.url }}
+        style={styles.video}
+        resizeMode="cover"
+        // 👈 जादू यहाँ है: अगर index मैच करेगा तभी चलेगा, वरना आवाज़ और वीडियो दोनों रुक जाएंगे
+        shouldPlay={activeVideoIndex === index} 
+        isLooping
+        isMuted={false}
+      />
+
+      {/* ❤️ Buttons */}
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.iconBox}>
+          <Ionicons name="heart" size={35} color="#fff" />
+          <Text style={styles.text}>{item.likes}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.iconBox}>
+          <Ionicons name="chatbubble-ellipses" size={32} color="#fff" />
+          <Text style={styles.text}>{item.comments}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.iconBox}>
+          <Ionicons name="share-social" size={32} color="#fff" />
+          <Text style={styles.text}>Share</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* राइट साइड के बटन (Like, Comment, Share) */}
-      <View style={styles.rightButtons}>
-        <TouchableOpacity style={styles.iconButton}><Text style={styles.iconText}>❤️</Text><Text style={styles.countText}>{item.likes}</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}><Text style={styles.iconText}>💬</Text><Text style={styles.countText}>45</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}><Text style={styles.iconText}>✈️</Text></TouchableOpacity>
-      </View>
-
-      {/* नीचे का कैप्शन और यूजरनाम */}
-      <View style={styles.bottomInfo}>
+      {/* 👤 Username */}
+      <View style={styles.bottomText}>
         <Text style={styles.username}>@{item.user}</Text>
-        <Text style={styles.caption}>{item.caption}</Text>
+        <Text style={styles.caption}>Awesome short video 🔥 #viral</Text>
       </View>
+
     </View>
   );
 
   return (
     <FlatList
-      data={DUMMY_REELS}
+      data={videos}
       renderItem={renderItem}
-      keyExtractor={item => item.id}
-      pagingEnabled // इससे रील एक-एक करके स्वाइप होगी (Instagram जैसा)
+      keyExtractor={(item) => item.id}
+      pagingEnabled // स्वाइप करने पर एक-एक वीडियो पर रुकेगा
+      onViewableItemsChanged={onViewableItemsChanged}
+      viewabilityConfig={viewabilityConfig}
       showsVerticalScrollIndicator={false}
+      // रील को स्मूथ बनाने के लिए ये सेटिंग्स ज़रूरी हैं
       snapToInterval={height}
       snapToAlignment="start"
       decelerationRate="fast"
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
-  reelContainer: { height: height, width: width, backgroundColor: '#000' },
-  videoPlaceholder: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#111' },
-  rightButtons: { position: 'absolute', right: 15, bottom: 100, alignItems: 'center' },
-  iconButton: { marginBottom: 20, alignItems: 'center' },
-  iconText: { fontSize: 30 },
-  countText: { color: '#fff', fontSize: 12 },
-  bottomInfo: { position: 'absolute', left: 15, bottom: 40, width: '80%' },
-  username: { color: '#fff', fontWeight: 'bold', fontSize: 16, marginBottom: 5 },
-  caption: { color: '#fff', fontSize: 14 },
+  container: {
+    width: width,
+    height: height,
+    backgroundColor: "#000"
+  },
+  video: {
+    ...StyleSheet.absoluteFillObject // पूरा स्क्रीन कवर करेगा
+  },
+  actions: {
+    position: "absolute",
+    right: 15,
+    bottom: 120,
+    alignItems: "center"
+  },
+  iconBox: {
+    marginBottom: 25,
+    alignItems: "center"
+  },
+  text: {
+    color: "#fff",
+    marginTop: 5,
+    fontWeight: 'bold'
+  },
+  bottomText: {
+    position: "absolute",
+    bottom: 40,
+    left: 15
+  },
+  username: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16
+  },
+  caption: {
+    color: "#fff",
+    marginTop: 5,
+    fontSize: 14
+  }
 });
-
-export default Reels;
-        
+          
