@@ -4,24 +4,29 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 
-// आपकी सभी फाइल्स का इम्पोर्ट
+// आपके डेटा से ली गई सभी फाइल्स का इम्पोर्ट
 import HomeScreen from './HomeScreen';
 import SearchScreen from './SearchScreen';
 import ProfileScreen from './ProfileScreen';
-import ReelsScreen from './Reels'; 
+import ReelsScreen from './Reels';
 import ShopScreen from './shop-system';
 import MonetizationScreen from './Monetization';
-import AuthScreen from './auth-system';
+import NotificationScreen from './notification-system';
+import SettingsScreen from './settings-system';
+import LiveScreen from './live-system';
+import CartScreen from './cart-system';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// प्रोफाइल के अंदर के फीचर्स के लिए Stack
+// प्रोफाइल के अंदर के सभी सिस्टम्स
 function ProfileStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="ProfileMain" component={ProfileScreen} options={{ title: 'My Profile' }} />
       <Stack.Screen name="Monetization" component={MonetizationScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="Notifications" component={NotificationScreen} />
     </Stack.Navigator>
   );
 }
@@ -52,4 +57,5 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-}
+  }
+          
