@@ -4,10 +4,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 
+// 1. यहाँ सुनिश्चित करें कि आपकी फाइलों के नाम सही हैं
 import HomeScreen from './HomeScreen'; 
-import SearchScreen from './search-system'; 
-import ProfileScreen from './profile-system';
-import MonetizationScreen from './Monetization'; // यह पेज अब सिर्फ प्रोफाइल से खुलेगा
+import SearchScreen from './SearchScreen'; // आपने इसे search-system नाम दिया था, इसे बदल लें
+import ProfileScreen from './ProfileScreen'; // यह आपकी नई प्रोफाइल फाइल है
+import MonetizationScreen from './Monetization'; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -29,12 +30,13 @@ export default function App() {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
             let iconName;
-            if (route.name === 'Home') iconName = 'home-outline';
-            else if (route.name === 'Search') iconName = 'search-outline';
-            else if (route.name === 'Profile') iconName = 'person-outline';
+            // 2. नीचे वाले नेविगेशन बार के आइकॉन
+            if (route.name === 'Home') iconName = 'home';
+            else if (route.name === 'Search') iconName = 'search';
+            else if (route.name === 'Profile') iconName = 'person';
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#FF0000',
+          tabBarActiveTintColor: '#FF0000', // एक्टिव होने पर लाल रंग
           headerShown: false,
         })}
       >
@@ -44,4 +46,5 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-          }
+} // फालतू ब्रैकेट हटा दिया गया है
+          
