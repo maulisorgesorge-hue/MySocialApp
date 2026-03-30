@@ -72,4 +72,46 @@ const styles = StyleSheet.create({
   gridContainer: { flexDirection: 'row', flexWrap: 'wrap' },
   gridImage: { width: width / 3 - 1, height: width / 3 - 1, margin: 0.5 }
 });
-  
+  import React, { useState } from 'react';
+import { View, Text, Switch, StyleSheet } from 'react-native';
+import { doc, updateDoc } from "firebase/firestore"; 
+import { db, auth } from "./firebase-config"; // आपकी फायरबेस फाइल
+
+const ProfileSettings = () => {
+  const [isPrivate, setIsPrivate] = useState(false);
+
+  // आईडी को पर्सनल (Private) करने का फंक्शन
+  const togglePrivacy = async (value) => {
+    setIsPrivate(value);
+    
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    try {
+      await updateDoc(userRef, {
+        isPrivate: value
+      });
+      console.log("Privacy Updated!");
+    } catch (error) {
+      console.error("Error updating privacy: ", error);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>पर्सनल आईडी (Private Account)</Text>
+      <Switch
+        trackColor={{ false: "#767577", true: "#81b0ff" }}
+        thumbColor={isPrivate ? "#f5dd4b" : "#f4f3f4"}
+        onValueChange={togglePrivacy}
+        value={isPrivate}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, flexDirection: 'row', justifyContent: 'space-between', padding: 20 },
+  text: { fontSize: 18, fontWeight: 'bold' }
+});
+
+export default ProfileSettings;
+          
