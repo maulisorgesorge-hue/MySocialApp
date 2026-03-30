@@ -4,22 +4,20 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 
-// आपके डेटा से ली गई सभी फाइल्स का इम्पोर्ट
+// आपकी सभी फाइल्स के इम्पोर्ट्स
 import HomeScreen from './HomeScreen';
 import SearchScreen from './SearchScreen';
-import ProfileScreen from './ProfileScreen';
 import ReelsScreen from './Reels';
 import ShopScreen from './shop-system';
+import ProfileScreen from './ProfileScreen';
 import MonetizationScreen from './Monetization';
 import NotificationScreen from './notification-system';
 import SettingsScreen from './settings-system';
-import LiveScreen from './live-system';
-import CartScreen from './cart-system';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// प्रोफाइल के अंदर के सभी सिस्टम्स
+// प्रोफाइल के अंदर की सेटिंग्स के लिए Stack
 function ProfileStack() {
   return (
     <Stack.Navigator>
@@ -45,8 +43,9 @@ export default function App() {
             else if (route.name === 'Profile') iconName = 'person';
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#e91e63',
+          tabBarActiveTintColor: '#ff0000',
           tabBarInactiveTintColor: 'gray',
+          headerShown: false, // स्क्रीन के ऊपर वाले नाम को छिपाने के लिए
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
@@ -57,5 +56,5 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-  }
-          
+                }
+        
