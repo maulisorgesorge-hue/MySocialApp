@@ -1,4 +1,3 @@
-cat <<EOT > app.json
 {
   "expo": {
     "name": "VibeTube-App",
@@ -37,4 +36,3 @@ cat <<EOT > app.json
     ]
   }
 }
-EOT
