@@ -2,14 +2,13 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
 
-// आपकी बनाई हुई फाइल्स को इम्पोर्ट कर रहे हैं
-import HomeScreen from './HomeScreen';
-import SearchScreen from './SearchScreen';
-import ReelsScreen from './Reels'; 
-import ShopScreen from './ShopScreen'; 
-import ProfileScreen from './ProfileScreen';
+// आपकी तस्वीरों (1000054971.jpg और 1000054973.jpg) के हिसाब से सही इंपोर्ट्स
+import HomeScreen from './HomeScreen'; 
+import SearchScreen from './SearchScreen'; // आपकी लिस्ट में SearchScreen.js है
+import ReelsScreen from './Reels';       // आपकी लिस्ट में Reels.js है
+import ShopScreen from './shop-system';   // आपकी लिस्ट में shop-system.js है
+import ProfileScreen from './ProfileScreen'; // आपकी लिस्ट में ProfileScreen.js है
 
 const Tab = createBottomTabNavigator();
 
@@ -20,25 +19,16 @@ export default function App() {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Search') {
-              iconName = focused ? 'search' : 'search-outline';
-            } else if (route.name === 'Reels') {
-              iconName = focused ? 'play-circle' : 'play-circle-outline';
-            } else if (route.name === 'Shop') {
-              iconName = focused ? 'cart' : 'cart-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'person' : 'person-outline';
-            }
-
+            if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+            else if (route.name === 'Search') iconName = focused ? 'search' : 'search-outline';
+            else if (route.name === 'Reels') iconName = focused ? 'play-circle' : 'play-circle-outline';
+            else if (route.name === 'Shop') iconName = focused ? 'cart' : 'cart-outline';
+            else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#FE2C55', // Instagram/Reels जैसा रेड-पिंक कलर
+          tabBarActiveTintColor: '#FE2C55',
           tabBarInactiveTintColor: 'gray',
-          tabBarStyle: styles.tabBar,
-          headerShown: false, // ऊपर का फालतू हेडर हटा दिया
+          headerShown: false,
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
@@ -49,15 +39,4 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-}
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#ffffff',
-    height: 65,
-    paddingBottom: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: '#dbdbdb',
-  },
-});
-        
+          }
