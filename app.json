@@ -27,10 +27,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "d2c3f76c-7171-4170-a414-ff1f19c17686"
+        "projectId": "23078b9e-b281-410f-97d9-ec1844cabe32"
       }
     },
     "sdkVersion": "50.0.0",
-    "plugins": [] 
+    "plugins": []
   }
 }
