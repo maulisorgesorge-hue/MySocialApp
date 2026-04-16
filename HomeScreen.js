@@ -9,7 +9,7 @@ export default function HomeScreen() {
   const [userStory, setUserStory] = useState(null);
   const [posts, setPosts] = useState([]);
 
-  // 1. रीयल-टाइम पोस्ट्स मंगाना
+  // 1. रीयल-टाइम पोस्ट्स मंगा
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
     
