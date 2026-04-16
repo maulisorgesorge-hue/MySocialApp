@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "195542666042",
+    "project_id": "socialstream-35452",
+    "storage_bucket": "socialstream-35452.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:195542666042:android:096323a575272820561e03",
+        "android_client_info": {
+          "package_name": "com.sorgemaulikrishna.vibetube"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCHyZoGpPjWFFtORMcww6usJDcIXhP8pw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

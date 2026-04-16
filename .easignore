@@ -1,0 +1,8 @@
+node_modules/
+core/
+.git/
+.npm/
+my-app/
+.expo/
+*.zip
+
