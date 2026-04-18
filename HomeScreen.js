@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // 'i' को छोटा कर दिया गया है
+iport React, { useState, useEffect } from "react"; // 'i' को छोटा कर दिया गया है
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
