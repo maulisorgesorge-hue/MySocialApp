@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-// आपकी तस्वीरों (1000054971.jpg और 1000054973.jpg) के हिसाब से सही इंपोर्ट्स
+/ आपकी तस्वीरों (1000054971.jpg और 1000054973.jpg) के हिसाब से सही इंपोर्ट्स
 import HomeScreen from './HomeScreen'; 
 import SearchScreen from './SearchScreen'; // आपकी लिस्ट में SearchScreen.js है
 import ReelsScreen from './Reels';       // आपकी लिस्ट में Reels.js है
